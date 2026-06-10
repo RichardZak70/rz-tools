@@ -45,7 +45,7 @@ Default output directory for generated assets: `docs/grok-output/`
 /grok-review analyze "output/resumes/agentic_ai/preview-page1.png" prompt="Audit this resume page for layout regressions vs an executive resume standard. Score each axis (hierarchy, density, whitespace, alignment, typography, readability at print resolution) 0–10. Flag any text that wraps awkwardly."
 
 # 3. Brainstorm cover-letter visual treatment using the website hero as reference
-/grok-review chat "Sketch three visual treatments for a cover-letter header banner that matches the richardzak.com brand. Each treatment: one sentence on palette, one on imagery, one on typography." images="website/public/og-default.png"
+/grok-review chat "Sketch three visual treatments for a cover-letter header banner that matches the richardzak.com brand. Each treatment: one sentence on palette, one on imagery, one on typography." images="public/og-default.png"
 
 # 4. Generate a 10-second clip for a LinkedIn outreach post
 /grok-review video "Slow-zoom on a code editor showing an MCP tool definition resolving to a green check; subtle particle field; ends on a clean wordmark slot." duration=10 aspect_ratio=16:9
@@ -69,14 +69,14 @@ mcp__grok-review__grok_analyze_image(
 
 mcp__grok-review__grok_multimodal_chat(
     prompt="Combine these moodboards into a single visual brief for the case-study cover.",
-    image_paths=["website/public/og-default.png"],
+    image_paths=["public/og-default.png"],
     system="You are a senior brand designer for an executive engineering portfolio (richardzak.com). Restrained, technical, credible. Dark navy + one accent.",
     model="grok-4.3"
 )
 
 mcp__grok-review__grok_generate_video(
     concept="...",
-    reference_image_paths=["website/public/og-default.png"],
+    reference_image_paths=["public/og-default.png"],
     duration_seconds=5,
     aspect_ratio="16:9",
     output_dir="docs/grok-output",
@@ -90,13 +90,13 @@ mcp__grok-review__grok_generate_video(
 2. **Inspect the output** in `docs/grok-output/`. Re-prompt with revised
    wording until the asset matches intent.
 3. **Promote** the chosen file into its production location:
-   - Case-study / blog cover graphics → `website/public/covers/<slug>.png`
-   - Open-Graph / Twitter-Card images → `website/public/og/<route>.png`
+   - Case-study / blog cover graphics → `public/covers/<slug>.png`
+   - Open-Graph / Twitter-Card images → `public/og/<route>.png`
    - Add or update the `<img alt="...">` text wherever the asset is
      referenced in the MDX / Astro component
 4. **Refresh derived assets** if the source changes: regenerate the
    sitemap and Open-Graph routes via the website build (`npm run build`
-   inside `website/`).
+   in rz-website).
 
 ## Configuration
 

@@ -1,11 +1,10 @@
-"""Grok Review MCP Server for RZ-Opportunity-Engine.
+"""Grok Review MCP Server (shared tooling, consumed via the .tools submodule).
 
 Bridge to xAI's Grok models for visual content workflows: send images and
 video concepts plus context, get back generated images, generated video,
-or vision-based analysis. Useful here for generating cover graphics for
-case studies / blog posts on the `website/` portfolio, vision-analysing
-the rendered resume / cover-letter PDFs, and ideating social-media
-visuals for outreach.
+or vision-based analysis. Useful for generating cover graphics for case
+studies / blog posts on the portfolio site, vision-analysing rendered
+resume / cover-letter PDFs, and ideating social-media visuals for outreach.
 
 Tools:
 - grok_generate_image: text-to-image generation (returns saved file paths).

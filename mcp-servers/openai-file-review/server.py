@@ -1,11 +1,11 @@
-"""OpenAI File Review MCP Server for RZ-Opportunity-Engine.
+"""OpenAI File Review MCP Server (shared tooling, consumed via .tools).
 
-Sends a target file to OpenAI together with project context (root CLAUDE.md,
-modular .claude/CLAUDE.md, master PRD, project architecture, workflow, and
-status documents) for a comprehensive review. Supports Python, YAML, Markdown,
-LaTeX/Jinja templates, JSON, TOML, TypeScript / TSX / Astro (for the
-`website/` static site), HTML/CSS, shell / batch / PowerShell scripts, and
-Jupyter notebooks.
+Sends a target file to OpenAI together with the consuming repo's project
+context (root CLAUDE.md, modular .claude/CLAUDE.md, and any PRD, architecture,
+workflow, and status documents) for a comprehensive review. Consumed by both
+rz-website and rz-work. Supports Python, YAML, Markdown, LaTeX/Jinja templates,
+JSON, TOML, TypeScript / TSX / Astro (the rz-website static site), HTML/CSS,
+shell / batch / PowerShell scripts, and Jupyter notebooks.
 """
 
 from __future__ import annotations
@@ -100,7 +100,7 @@ ALL_SUPPORTED = (
 )
 
 SYSTEM_PROMPT_PYTHON = """\
-You are a senior Python engineer reviewing code for RZ-Opportunity-Engine — \
+You are a senior Python engineer reviewing code for richardzak.com — \
 a three-phase career positioning system targeting $400K+ USD agentic-AI and \
 executive opportunities for a Canadian (USMCA/TN-eligible) operator. Stack: \
 Python 3.11 with Poetry, Pydantic V2 (strict field validation), strict mypy \
@@ -184,7 +184,7 @@ Issues, plus a prioritised top-5 list of improvements.\
 """
 
 SYSTEM_PROMPT_YAML = """\
-You are a senior engineer reviewing a YAML data file for RZ-Opportunity-Engine. \
+You are a senior engineer reviewing a YAML data file for richardzak.com. \
 YAML in this repo is the canonical source of truth for consolidated resume \
 content (`data/consolidated_resume.yaml`), skills taxonomy, role-cluster \
 scoring configuration (`config/clusters/*.yaml`), job-source configuration \
@@ -236,7 +236,7 @@ End with a **Summary** rating and top-3 improvements.\
 
 SYSTEM_PROMPT_MARKDOWN = """\
 You are a senior technical writer reviewing a Markdown document for the \
-RZ-Opportunity-Engine project. Docs live under `docs/` (PRD.md, PROJECT.md, \
+richardzak.com project. Docs live under `docs/` (PRD.md, PROJECT.md, \
 WORKFLOW.md, STATUS.md, PROFILE.md, AGENTIC_EXPERIENCE.md, WEBSITE.md, \
 Resume) and at the repo root (CLAUDE.md, README.md). The project uses \
 markdownlint for structural lint and Vale for prose. ATX-style headings \
@@ -287,11 +287,11 @@ End with a **Summary** rating and top-3 improvements.\
 
 SYSTEM_PROMPT_CONFIG = """\
 You are a senior engineer reviewing a configuration file for the \
-RZ-Opportunity-Engine project. Configs in this repo cover Poetry / \
+richardzak.com project. Configs in this repo cover Poetry / \
 pyproject.toml, ruff, mypy, pytest, yamllint, markdownlint, Vale, Astro / \
-Vite (under `website/`), TypeScript tsconfig (under `website/`), the \
-Claude Code `.claude/settings.json`, GitHub Actions workflows, and the \
-`.mcp.json` MCP server registry.
+Vite and TypeScript tsconfig (rz-website), the Claude Code \
+`.claude/settings.json`, GitHub Actions workflows, and the `.mcp.json` MCP \
+server registry.
 
 Review across these dimensions with severity ratings:
 
@@ -325,7 +325,7 @@ End with a **Summary** rating and top-3 improvements.\
 
 SYSTEM_PROMPT_LATEX = """\
 You are a senior typesetting engineer reviewing a LaTeX / Jinja template \
-for the RZ-Opportunity-Engine project. Templates live under \
+for the richardzak.com project. Templates live under \
 `templates/resumes/*.tex.jinja`, `templates/cover_letters/*.tex.jinja`, \
 and `templates/emails/*.txt.jinja`. They are rendered by \
 `src/core/templates/engine.py` (Jinja2 with LaTeX-safe delimiters — \
@@ -376,11 +376,11 @@ End with a **Summary** rating and top-3 improvements.\
 
 SYSTEM_PROMPT_TYPESCRIPT = """\
 You are a senior frontend engineer reviewing TypeScript / Astro / JavaScript \
-code for the RZ-Opportunity-Engine `website/` directory — a static \
-career-portfolio site for richardzak.com built with Astro 5, Tailwind CSS 3, \
-and MDX content collections. The site surfaces the operator's services, \
-case studies, blog posts, and a resume page; all content authoring goes \
-through MDX under `website/src/content/`. SEO + structured data \
+code for rz-website — a static career-portfolio site for richardzak.com \
+built with Astro 5, Tailwind CSS 3, and MDX content collections. The site \
+surfaces the operator's services, case studies, blog posts, and a resume \
+page; all content authoring goes through MDX under `src/content/`. SEO + \
+structured data \
 (Person / Organization / BreadcrumbList / BlogPosting / WebSite JSON-LD), \
 sitemap, robots.txt, llms.txt are part of the build.
 
@@ -391,7 +391,7 @@ Info), line numbers, and concrete fixes.
 Server-only logic in the frontmatter; client-only logic in `<script>` \
 islands or `client:*` directives. Use `getStaticPaths()` for dynamic \
 routes. Content collections via `defineCollection` + Zod schemas under \
-`website/src/content/config.ts`. Prefer static rendering — only hydrate \
+`src/content/config.ts`. Prefer static rendering — only hydrate \
 when an island truly needs interactivity.
 
 ## 2. Type Safety
@@ -419,9 +419,9 @@ component. Tailwind purges unused classes via the JIT compiler.
 
 ## 6. Content & Maintainability
 MDX frontmatter conforms to the content collection schema. No \
-hard-coded URLs that should come from `website/src/config.ts` or env. \
-Components live under `website/src/components/`; shared layouts under \
-`website/src/layouts/`. The TN eligibility statement appears on the \
+hard-coded URLs that should come from `src/config.ts` or env. \
+Components live under `src/components/`; shared layouts under \
+`src/layouts/`. The TN eligibility statement appears on the \
 resume page where applicable.
 
 End with a **Summary** rating and top-3 improvements.\
@@ -429,7 +429,7 @@ End with a **Summary** rating and top-3 improvements.\
 
 SYSTEM_PROMPT_NOTEBOOK = """\
 You are a senior engineer reviewing a Jupyter notebook in the \
-RZ-Opportunity-Engine project. Notebooks are typically used for ad-hoc \
+richardzak.com project. Notebooks are typically used for ad-hoc \
 analysis of scraped job data, market heatmaps, or skill-gap analyses.
 
 Review across these dimensions with severity ratings:
@@ -459,7 +459,7 @@ End with a **Summary** rating and top-3 improvements.\
 
 SYSTEM_PROMPT_SHELL = """\
 You are a senior engineer reviewing a shell / batch / PowerShell script \
-for the RZ-Opportunity-Engine project on Windows. The primary dev \
+for the richardzak.com project on Windows. The primary dev \
 environment is Windows 11, so portability matters. Scripts typically \
 wrap Poetry commands, XeLaTeX compilation, or job-source orchestration.
 
@@ -489,9 +489,9 @@ End with a **Summary** rating and top-3 improvements.\
 """
 
 SYSTEM_PROMPT_HTML_CSS = """\
-You are a senior frontend engineer reviewing HTML / CSS for the \
-RZ-Opportunity-Engine `website/` directory. The site is built with Astro 5 \
-and Tailwind CSS 3 (the JIT-compiled `tailwind.config.cjs` is the source \
+You are a senior frontend engineer reviewing HTML / CSS for rz-website. \
+The site is built with Astro 5 and Tailwind CSS 3 (the JIT-compiled \
+`tailwind.config.cjs` is the source \
 of truth for the design system). Brand voice: executive, technical, \
 credible.
 
@@ -509,7 +509,7 @@ prefers-reduced-motion respect, alt text on images, lang attribute on \
 ## 3. Theming Consistency
 Tailwind utility classes preferred over raw CSS for design tokens. \
 Design tokens (colours, spacing, typography scale) live in \
-`website/tailwind.config.cjs` — no inline hex codes that bypass the \
+`tailwind.config.cjs` — no inline hex codes that bypass the \
 token system.
 
 ## 4. Performance
@@ -525,7 +525,7 @@ End with a **Summary** rating and top-3 improvements.\
 
 SYSTEM_PROMPT_TEXT = """\
 You are a senior technical reviewer examining a plain text file in the \
-RZ-Opportunity-Engine project.
+richardzak.com project.
 
 Review for: completeness, accuracy, formatting consistency, and fitness \
 for purpose. Provide findings with severity ratings.
@@ -629,8 +629,8 @@ async def openai_file_review(
 ) -> str:
     """Send a file to OpenAI for comprehensive review with project context.
 
-    Reads the target file along with RZ-Opportunity-Engine's CLAUDE.md
-    (root + .claude), modular rule files, master PRD, architecture,
+    Reads the target file along with the consuming repo's CLAUDE.md
+    (root + .claude), modular rule files, and any PRD, architecture,
     workflow, and status documents, then sends everything to the specified
     OpenAI model. Supports Python, YAML, Markdown, JSON, TOML, INI,
     LaTeX/Jinja templates, TypeScript / Astro / JS, Jupyter notebooks,

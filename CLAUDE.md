@@ -71,14 +71,14 @@ pip install -r mcp-servers/openai-file-review/requirements.txt
 python -c "import ast; ast.parse(open('mcp-servers/openai-file-review/server.py', encoding='utf-8').read())"
 ```
 
-## Known follow-ups (deferred from the Phase 3 split)
+## Notes
 
-- The OpenAI server prompt strings still name "RZ-Opportunity-Engine" and
-  reference monolith paths (`website/`, `src/core/...`) as illustrative context.
-  These are cosmetic prompt context, not path dependencies — generalise them
-  when convenient.
-- `claude/commands/mcp.md` carries pipeline-flavored auto-implement examples
-  (scoring, `consolidated_resume.yaml`). Each consuming repo may keep a tailored
-  copy of the command; this is the shared baseline.
+- The server prompts and the `/mcp` + `/grok-review` command docs were
+  generalised away from the monolith name and its `website/` layout — they now
+  read as shared tooling and describe `rz-website` (Astro at the repo root) and
+  `rz-work` (Python pipeline) accurately. The per-file-type review guidance is
+  intentionally specific to whichever repo reviews that file type.
+- `claude/commands/mcp.md` is the shared baseline. A consuming repo may keep a
+  tailored copy with repo-specific auto-implement rules.
 - `claude/agents/` is empty by design. Promote an agent here only when both
   child repos genuinely share it.
