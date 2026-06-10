@@ -1,0 +1,84 @@
+# CLAUDE.md
+
+Guidance for Claude Code when working in this repository.
+
+## Project Overview
+
+`rz-tools` holds the shared developer tooling for the `richardzak.com`
+repository family: the MCP servers and reusable Claude Code configuration that
+both `rz-website` (public Astro site) and `rz-work` (private Python pipeline)
+consume. It is the third repo from the `RZ-Opportunity-Engine` split on
+2026-06-09 (predecessor tag `pre-split-2026-06-09`).
+
+This repo owns: MCP servers, cross-cutting slash commands, and generic hooks.
+It does **not** own application code, content, or deploy config — those live in
+the child repos.
+
+## Companion Repositories
+
+| Repo | Purpose | Visibility |
+| ---- | ------- | ---------- |
+| `rz-website` | Public Astro site at richardzak.com | Public |
+| `rz-work` | Private Python pipeline — resume / cover-letter / LinkedIn / CRM | Private |
+| `rz-tools` (this repo) | MCP servers + shared Claude Code config | Public |
+
+## Layout
+
+```text
+mcp-servers/
+  grok-review/         # xAI Grok — image / video generation + vision analysis
+  openai-review/       # OpenAI — review a code snippet (no project context)
+  openai-file-review/  # OpenAI — review a whole file with project context
+claude/
+  agents/              # Cross-cutting agents only (none yet)
+  commands/            # /mcp, /grok-review
+  hooks/               # check-line-endings, check-no-emojis, markdown-lint
+```
+
+## How the servers resolve the project root
+
+Each server walks up from its own file location to the nearest directory
+containing a `.mcp.json`, falling back to two levels up (the directory holding
+`mcp-servers/`). This is the single mechanism that lets a server work both at a
+repo root (the old monolith) and nested inside a `.tools/` submodule, where the
+consuming repo root sits one level above `.tools/`.
+
+Implications when editing servers:
+
+- Do **not** add a `.mcp.json` at the root of this repo — it would shadow the
+  walk-up and make servers resolve their own root instead of the consuming
+  repo's.
+- `.env` loading and (for `openai-file-review`) the auto-loaded `CONTEXT_FILES`
+  both key off this resolved root, so they must use `_find_project_root()` /
+  `PROJECT_ROOT`, never a hard-coded `parent.parent`.
+
+## Conventions
+
+- **No emojis** anywhere — source, markup, docs, commit messages.
+- **120-char line length** for code and Markdown.
+- **Conventional commits**: `type(scope): description`. Scopes: `mcp`,
+  `commands`, `hooks`, `agents`, `docs`, `deps`.
+- **No secrets committed.** `.env` is gitignored; only `.env.example` ships.
+- Match the surrounding code's style when editing a server.
+
+## Development
+
+```bash
+# Install one server's deps
+pip install -r mcp-servers/openai-file-review/requirements.txt
+
+# Syntax-check a server
+python -c "import ast; ast.parse(open('mcp-servers/openai-file-review/server.py', encoding='utf-8').read())"
+```
+
+## Known follow-ups (deferred from the Phase 3 split)
+
+- The OpenAI server prompt strings still name "RZ-Opportunity-Engine" and
+  reference monolith paths (`website/`, `src/core/...`) as illustrative context.
+  These are cosmetic prompt context, not path dependencies — generalise them
+  when convenient.
+- `claude/commands/mcp.md` carries pipeline-flavored auto-implement examples
+  (scoring, `consolidated_resume.yaml`). Each consuming repo may keep a tailored
+  copy of the command; this is the shared baseline.
+- `claude/agents/` is empty by design. Promote an agent here only when both
+  child repos genuinely share it.

@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Local Claude Code overrides
+.claude/settings.local.json
+CLAUDE.local.md
