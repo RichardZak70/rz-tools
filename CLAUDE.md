@@ -63,13 +63,33 @@ Implications when editing servers:
 
 ## Development
 
+Target interpreter: **Python 3.14** (currently `C:\Python314\python.exe` on
+this machine). 3.11 is the supported floor — both run the server stack
+(`mcp >= 1.0`, `httpx >= 0.28`, `python-dotenv >= 1.0`) without changes.
+`.mcp.json` uses `"command": "python"` so whatever `python` resolves to on
+PATH is what runs the server; verify with `python --version` if you change
+your interpreter.
+
 ```bash
-# Install one server's deps
+# Install one server's deps (covers all three — the requirements files match)
 pip install -r mcp-servers/openai-file-review/requirements.txt
 
 # Syntax-check a server
 python -c "import ast; ast.parse(open('mcp-servers/openai-file-review/server.py', encoding='utf-8').read())"
 ```
+
+## Credential resolution
+
+`.mcp.json` in each consuming repo references credentials via `${VAR}`. The
+MCP client expands those from the **process environment** before launching
+the server; inside the server, `python-dotenv` then loads the consuming
+repo's `.env` with `override=False`. Net effect: a populated process /
+system env wins over an empty `.env` line, so a system-wide `OPENAI_API_KEY`
+is used automatically — no `.env` edit needed. A key absent from both is
+unset, and the server returns `ERROR: <VAR> environment variable is not
+set.` (Verified end-to-end on this machine: system `OPENAI_API_KEY`
+propagates through all three repos and a live `openai-review` call
+succeeds.)
 
 ## Notes
 

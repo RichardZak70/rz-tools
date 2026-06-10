@@ -73,11 +73,35 @@ git clone --recurse-submodules <repo-url>
 git submodule update --init --recursive
 ```
 
-Install each server's dependencies once:
+### Requirements
 
-```bash
-pip install -r mcp-servers/openai-file-review/requirements.txt
-```
+- **Python 3.14** (tested) — `3.11+` is the supported floor.
+- The `python` on PATH must resolve to the interpreter you want the MCP
+  client to launch, since `.mcp.json` uses `"command": "python"`.
+- Each server depends on `mcp >= 1.0`, `httpx >= 0.28`, and
+  `python-dotenv >= 1.0` — install once into the active interpreter:
+
+  ```bash
+  pip install -r .tools/mcp-servers/openai-file-review/requirements.txt
+  ```
+
+  (The three `requirements.txt` files are identical; one install covers all
+  three servers.)
+
+### Credentials
+
+`.mcp.json` references credentials via `${VAR}` substitution, which the MCP
+client expands from the **process environment** before launching each
+server. Inside the server, `python-dotenv` then loads the consuming repo's
+`.env` with `override=False`, so a populated process env wins over an empty
+or absent `.env` line. Net effect:
+
+- A key set in your system / user environment (e.g. `OPENAI_API_KEY`) is
+  picked up automatically — no `.env` edit needed.
+- A key set in `.env` overrides nothing from the system env but populates a
+  missing one.
+- A key absent from both is unset, and the server returns
+  `ERROR: <VAR> environment variable is not set.`
 
 Cross-cutting slash commands (`/mcp`, `/grok-review`) and generic hooks live
 under `claude/`; consuming repos symlink or copy the pieces they need into their
